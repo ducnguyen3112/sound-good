@@ -13,4 +13,5 @@ public class SoundRes {
     String title;
     String soundPath;
     String coverPath;
+    boolean liked;
 }

@@ -23,4 +23,13 @@ public class PaginationRes<T> {
         this.totalElement = page.getNumberOfElements();
         this.totalPages = page.getTotalPages();
     }
+
+    public <E> PaginationRes(List<T> data, Page<E> page) {
+        this.data = data;
+        this.page = page.getNumber();
+        this.size = page.getSize();
+        this.totalPages = page.getTotalPages();
+        this.totalElement = page.getNumberOfElements();
+        this.totalPages = page.getTotalPages();
+    }
 }

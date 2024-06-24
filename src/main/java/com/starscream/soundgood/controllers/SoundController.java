@@ -10,7 +10,6 @@ import com.starscream.soundgood.service.SoundService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +38,7 @@ public class SoundController {
         SoundFile soundFile = soundService.getSoundFile(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(soundFile.getContentType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + soundFile.getResource().getFilename() + "\"")
+                .headers(soundFile.getHeaders())
                 .body(soundFile.getResource());
     }
 }

@@ -1,11 +1,13 @@
 package com.starscream.soundgood.entities;
 
 import jakarta.persistence.Embeddable;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
+@Data
 public class UserSoundId implements Serializable {
     private Long userId;
     private Long soundId;

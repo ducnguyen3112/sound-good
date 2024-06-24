@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 
 @Data
 @Builder
@@ -13,4 +14,5 @@ import org.springframework.core.io.Resource;
 public class SoundFile {
     Resource resource;
     String contentType;
+    HttpHeaders headers;
 }

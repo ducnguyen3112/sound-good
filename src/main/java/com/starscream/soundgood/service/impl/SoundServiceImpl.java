@@ -4,12 +4,15 @@ import com.starscream.soundgood.config.context.UserContext;
 import com.starscream.soundgood.dtos.model.SoundFile;
 import com.starscream.soundgood.dtos.reponse.CreateSoundRes;
 import com.starscream.soundgood.dtos.reponse.SoundPaginationRes;
+import com.starscream.soundgood.dtos.reponse.SoundRes;
 import com.starscream.soundgood.dtos.request.CreateSoundReq;
 import com.starscream.soundgood.dtos.request.SoundsReq;
 import com.starscream.soundgood.entities.AppUser;
 import com.starscream.soundgood.entities.Sound;
+import com.starscream.soundgood.entities.UserSound;
 import com.starscream.soundgood.exceptions.ValidationException;
 import com.starscream.soundgood.repositories.SoundRepository;
+import com.starscream.soundgood.repositories.UserSoundRepository;
 import com.starscream.soundgood.service.SoundService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.utils.StringUtils;
@@ -20,6 +23,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -27,6 +32,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -34,6 +43,7 @@ public class SoundServiceImpl implements SoundService {
 
     private final SoundRepository soundRepository;
     private final UserContext userContext;
+    private final UserSoundRepository userSoundRepository;
 
     @Override
     public CreateSoundRes createSound(CreateSoundReq createSoundReq) {
@@ -49,6 +59,7 @@ public class SoundServiceImpl implements SoundService {
 
     @Override
     public SoundPaginationRes getAllSound(SoundsReq req) {
+        AppUser appUser = userContext.getUser();
         Pageable pageRequest = PageRequest.of(req.getPage() - 1, req.getSize());
         Page<Sound> sounds;
 
@@ -57,7 +68,15 @@ public class SoundServiceImpl implements SoundService {
         } else {
             sounds = soundRepository.findAllByTitleContainingIgnoreCase(req.getKeyword(), pageRequest);
         }
-        return new SoundPaginationRes(sounds);
+        List<SoundRes> res = sounds.getContent().stream().map(sound -> {
+            SoundRes soundRes = new SoundRes();
+            BeanUtils.copyProperties(sound, soundRes);
+            Optional<UserSound> userSound = userSoundRepository.findById_UserIdAndId_SoundId(appUser.getId(), sound.getId());
+            soundRes.setLiked(userSound.isPresent());
+            return soundRes;
+        }).toList();
+
+        return new SoundPaginationRes(res, sounds);
     }
 
     @Override
@@ -73,6 +92,9 @@ public class SoundServiceImpl implements SoundService {
         if (contentType == null) {
             contentType = "application/octet-stream";
         }
-        return SoundFile.builder().contentType(contentType).resource(resource).build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(contentType));
+        headers.setContentLength(resource.contentLength());
+        return SoundFile.builder().contentType(contentType).resource(resource).headers(headers).build();
     }
 }
