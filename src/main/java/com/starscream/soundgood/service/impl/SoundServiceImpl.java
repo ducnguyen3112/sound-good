@@ -10,10 +10,12 @@ import com.starscream.soundgood.dtos.request.SoundsReq;
 import com.starscream.soundgood.entities.AppUser;
 import com.starscream.soundgood.entities.Sound;
 import com.starscream.soundgood.entities.UserSound;
+import com.starscream.soundgood.entities.UserSoundId;
 import com.starscream.soundgood.exceptions.ValidationException;
 import com.starscream.soundgood.repositories.SoundRepository;
 import com.starscream.soundgood.repositories.UserSoundRepository;
 import com.starscream.soundgood.service.SoundService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.utils.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -33,9 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -96,5 +96,33 @@ public class SoundServiceImpl implements SoundService {
         headers.setContentType(MediaType.parseMediaType(contentType));
         headers.setContentLength(resource.contentLength());
         return SoundFile.builder().contentType(contentType).resource(resource).headers(headers).build();
+    }
+
+    @Transactional
+    @Override
+    public SoundRes actionLiked(Long id, boolean isLike) {
+        Sound sound = soundRepository.findById(id).orElseThrow(() -> new ValidationException("Sound not found!"));
+        AppUser appUser = userContext.getUser();
+
+        UserSoundId userSoundId = new UserSoundId(appUser.getId(), sound.getId());
+        UserSound userSound = userSoundRepository.findById(userSoundId).orElse(null);
+
+        if (isLike) {
+            if (userSound == null) {
+                userSound = new UserSound();
+                userSound.setId(userSoundId);
+                userSound.setUser(appUser);
+                userSound.setSound(sound);
+                userSoundRepository.save(userSound);
+            }
+        } else {
+            if (userSound != null) {
+                userSoundRepository.delete(userSound);
+            }
+        }
+        SoundRes res = new SoundRes();
+        BeanUtils.copyProperties(sound, res);
+        res.setLiked(isLike);
+        return res;
     }
 }
