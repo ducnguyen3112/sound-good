@@ -17,7 +17,6 @@ import com.starscream.soundgood.repositories.UserSoundRepository;
 import com.starscream.soundgood.service.SoundService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.tika.utils.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -63,11 +62,9 @@ public class SoundServiceImpl implements SoundService {
         Pageable pageRequest = PageRequest.of(req.getPage() - 1, req.getSize());
         Page<Sound> sounds;
 
-        if (StringUtils.isBlank(req.getKeyword())) {
-            sounds = soundRepository.findAll(pageRequest);
-        } else {
-            sounds = soundRepository.findAllByTitleContainingIgnoreCase(req.getKeyword(), pageRequest);
-        }
+        sounds = soundRepository.findSongsByCriteria(req.getKeyword(),
+                (req.getIsLiked() != null && req.getIsLiked()) ? appUser.getId() : null, req.getPlayListId()
+                , pageRequest);
         List<SoundRes> res = sounds.getContent().stream().map(sound -> {
             SoundRes soundRes = new SoundRes();
             BeanUtils.copyProperties(sound, soundRes);

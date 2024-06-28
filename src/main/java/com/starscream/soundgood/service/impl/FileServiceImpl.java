@@ -1,7 +1,6 @@
 package com.starscream.soundgood.service.impl;
 
 import com.starscream.soundgood.dtos.reponse.FileUploadedRes;
-import com.starscream.soundgood.enums.FileTypeEnum;
 import com.starscream.soundgood.exceptions.UnexpectedException;
 import com.starscream.soundgood.exceptions.ValidationException;
 import com.starscream.soundgood.service.FileService;

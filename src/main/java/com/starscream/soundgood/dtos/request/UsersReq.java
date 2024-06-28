@@ -5,7 +5,5 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SoundsReq extends PaginationReq {
-    Boolean isLiked;
-    Long playListId;
+public class UsersReq extends PaginationReq {
 }

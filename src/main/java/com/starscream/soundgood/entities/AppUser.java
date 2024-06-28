@@ -1,5 +1,6 @@
 package com.starscream.soundgood.entities;
 
+import com.starscream.soundgood.enums.UserStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -25,4 +26,5 @@ public class AppUser extends Auditable {
     Role role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<UserSound> favoriteSounds;
+    UserStatusEnum status;
 }

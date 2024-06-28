@@ -1,5 +1,6 @@
 package com.starscream.soundgood.entities;
 
+import com.starscream.soundgood.repositories.PlaylistSound;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class Sound extends Auditable {
     String soundPath;
     String coverPath;
     @OneToMany(mappedBy = "sound", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<UserSound> FavoriteBy; ;
-    @ManyToMany(mappedBy = "sounds")
-    Set<Playlist> Playlists;
+    Set<UserSound> favoriteBy;
+    @OneToMany(mappedBy = "sound", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<PlaylistSound> playlistSounds;
 }

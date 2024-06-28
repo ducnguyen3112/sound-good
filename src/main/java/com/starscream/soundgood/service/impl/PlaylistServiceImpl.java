@@ -5,7 +5,10 @@ import com.starscream.soundgood.dtos.reponse.PlayListRes;
 import com.starscream.soundgood.dtos.request.PlayListReq;
 import com.starscream.soundgood.entities.AppUser;
 import com.starscream.soundgood.entities.Playlist;
-import com.starscream.soundgood.repositories.PlaylistRepository;
+import com.starscream.soundgood.entities.Sound;
+import com.starscream.soundgood.enums.ActionEnum;
+import com.starscream.soundgood.exceptions.ValidationException;
+import com.starscream.soundgood.repositories.*;
 import com.starscream.soundgood.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
+    private final SoundRepository soundRepository;
+    private final PlaylistSoundRepository playlistSoundRepository;
     private final UserContext userContext;
 
     @Override
@@ -32,7 +37,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                         .title(playlist.getTitle())
                         .build())
                 .collect(Collectors.toSet());
-    };
+    }
 
     @Override
     public PlayListRes createPlaylist(PlayListReq playlistReq) {
@@ -46,5 +51,26 @@ public class PlaylistServiceImpl implements PlaylistService {
         return res;
     }
 
+    @Override
+    public void actionToPlaylist(Long playlistId, Long soundId, ActionEnum action) {
+        Playlist playlist =
+                playlistRepository.findById(playlistId).orElseThrow(() -> new ValidationException("Play list not found."));
+        Sound sound =
+                soundRepository.findById(playlistId).orElseThrow(() -> new ValidationException("Sound not found."));
+        PlaylistSoundId playlistSoundId = new PlaylistSoundId(playlistId,
+                soundId);
+        switch (action) {
+            case ADD -> {
+                PlaylistSound playlistSound =
+                        PlaylistSound.builder().id(playlistSoundId).playlist(playlist).sound(sound).build();
+                playlistSoundRepository.save(playlistSound);
+            }
+            case REMOVE -> {
+                PlaylistSound playlistSound =
+                        playlistSoundRepository.findById(playlistSoundId).orElseThrow(() -> new ValidationException("Sound already removed."));
+                playlistSoundRepository.delete(playlistSound);
+            }
+        }
+    }
 
 }

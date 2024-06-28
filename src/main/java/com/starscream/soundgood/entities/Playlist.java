@@ -1,5 +1,6 @@
 package com.starscream.soundgood.entities;
 
+import com.starscream.soundgood.repositories.PlaylistSound;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
+
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -19,9 +21,7 @@ public class Playlist extends Auditable {
     String title;
     @ManyToOne
     AppUser createdBy;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "playlist_sound",
-            joinColumns = @JoinColumn(name = "playlist_id"),
-            inverseJoinColumns = @JoinColumn(name = "sound_id"))
-    Set<Sound> sounds;
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval =
+            true)
+    Set<PlaylistSound> playlistSounds;
 }
