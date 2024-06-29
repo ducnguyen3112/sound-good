@@ -26,5 +26,6 @@ public class AppUser extends Auditable {
     Role role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<UserSound> favoriteSounds;
+    @Enumerated(EnumType.STRING)
     UserStatusEnum status;
 }

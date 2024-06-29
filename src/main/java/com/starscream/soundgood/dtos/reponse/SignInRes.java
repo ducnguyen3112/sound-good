@@ -11,4 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class SignInRes {
     String token;
     String role;
+    Long exp;
 }

@@ -19,7 +19,7 @@ public class Role extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     List<AppUser> users;
 
     public Role(String name) {

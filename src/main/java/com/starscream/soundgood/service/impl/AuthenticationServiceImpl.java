@@ -6,6 +6,7 @@ import com.starscream.soundgood.dtos.request.SignInReq;
 import com.starscream.soundgood.dtos.request.SignUpReq;
 import com.starscream.soundgood.entities.AppUser;
 import com.starscream.soundgood.entities.Role;
+import com.starscream.soundgood.enums.UserStatusEnum;
 import com.starscream.soundgood.exceptions.UnexpectedException;
 import com.starscream.soundgood.exceptions.ValidationException;
 import com.starscream.soundgood.repositories.RoleRepository;
@@ -51,9 +52,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         SecurityContextHolder.getContext()
                 .setAuthentication(authentication);
-        AppUser user = userRepository.findByUsername(signInReq.getUsername()).get();
+        AppUser user = userRepository.findByUsernameAndStatus(signInReq.getUsername(), UserStatusEnum.ACTIVE).get();
         String jwt = jwtTokenProvider.generateToken(authentication);
-        return SignInRes.builder().token(jwt).role(user.getRole().getName()).build();
+        return SignInRes.builder().token(jwt).role(user.getRole().getName()).exp(jwtTokenProvider.getExpirationDateFromToken(jwt).getTime()).build();
     }
 
 }

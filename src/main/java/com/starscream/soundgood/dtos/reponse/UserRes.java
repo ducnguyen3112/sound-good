@@ -13,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class UserRes {
     Long id;
     String username;
-    Role role;
+    String role;
     UserStatusEnum status;
 }

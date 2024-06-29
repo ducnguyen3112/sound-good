@@ -1,5 +1,5 @@
 package com.starscream.soundgood.enums;
 
 public enum ActionEnum {
-    REMOVE, ADD
+    REMOVE, ADD, ACTIVATE, DEACTIVATE;
 }

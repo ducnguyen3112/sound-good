@@ -13,6 +13,7 @@ public class UserPaginationRes extends PaginationRes<UserRes> {
         super.setData(page.getContent().stream().map(item -> {
             UserRes userRes = new UserRes();
             BeanUtils.copyProperties(item, userRes);
+            userRes.setRole(item.getRole().getName());
             return userRes;
         }).toList());
     }

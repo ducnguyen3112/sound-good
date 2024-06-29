@@ -56,7 +56,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         Playlist playlist =
                 playlistRepository.findById(playlistId).orElseThrow(() -> new ValidationException("Play list not found."));
         Sound sound =
-                soundRepository.findById(playlistId).orElseThrow(() -> new ValidationException("Sound not found."));
+                soundRepository.findById(soundId).orElseThrow(() -> new ValidationException("Sound not found."));
         PlaylistSoundId playlistSoundId = new PlaylistSoundId(playlistId,
                 soundId);
         switch (action) {

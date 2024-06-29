@@ -1,10 +1,7 @@
 package com.starscream.soundgood.config.securities.jwt;
 
 import com.starscream.soundgood.config.user.details.UserDetailsImpl;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -32,6 +29,15 @@ public class JwtTokenProvider {
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + validityInMilliseconds))
                 .signWith(getSigningKey()).compact();
+    }
+
+    public Date getExpirationDateFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration();
     }
 
     private SecretKey getSigningKey() {
