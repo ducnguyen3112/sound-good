@@ -43,6 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Role role = roleRepository.findByName("USER").orElseThrow(() -> new UnexpectedException("Role not found"));
         user.setRole(role);
+        user.setStatus(UserStatusEnum.ACTIVE);
         userRepository.save(user);
     }
 

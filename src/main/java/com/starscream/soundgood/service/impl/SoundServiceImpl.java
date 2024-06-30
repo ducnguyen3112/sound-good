@@ -68,8 +68,10 @@ public class SoundServiceImpl implements SoundService {
         List<SoundRes> res = sounds.getContent().stream().map(sound -> {
             SoundRes soundRes = new SoundRes();
             BeanUtils.copyProperties(sound, soundRes);
-            Optional<UserSound> userSound = userSoundRepository.findById_UserIdAndId_SoundId(appUser.getId(), sound.getId());
-            soundRes.setLiked(userSound.isPresent());
+            if (appUser != null) {
+                Optional<UserSound> userSound = userSoundRepository.findById_UserIdAndId_SoundId(appUser.getId(), sound.getId());
+                soundRes.setLiked(userSound.isPresent());
+            }
             return soundRes;
         }).toList();
 
