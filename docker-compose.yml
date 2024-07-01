@@ -24,5 +24,11 @@ services:
     ports:
       - "5432:5432"
 
+  fe:
+    image: ducnguyen3112/sound-good-fe:latest
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
 volumes:
   postgres_data:
